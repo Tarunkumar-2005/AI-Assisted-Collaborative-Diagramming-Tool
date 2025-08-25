@@ -29,7 +29,7 @@ Arrow recognition
 
 Frontend: React + Vite + Canvas API
 
-Backend: Node.js + Express + Socket.IO (for real-time collaboration)
+Backend: Node.js + Express + MongoDB 
 
 AI/Heuristics: Geometry-based rules 
 # commands to run project
