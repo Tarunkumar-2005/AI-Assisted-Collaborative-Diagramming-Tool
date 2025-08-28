@@ -1,62 +1,87 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 export default function Login() {
-  const [formData, setFormData] = useState({ username: "", password: "" });
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  });
 
+  const [message, setMessage] = useState("");
+  const [token, setToken] = useState("");
+  const navigate = useNavigate();
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData);
-      const { userId } = res.data;
-      alert("Login successful!");
-      navigate(`/dashboard/${userId}`);
-    } catch (err) {
-      alert("Login failed. Try again.");
+      const url = "http://localhost:3000/api/auth";
+      const { data } = await axios.post(url, formData);
+      setMessage(data.message);
+      setToken(data.data); // JWT token
+      localStorage.setItem("token", data.data); // store token in localStorage
+      let userid=data.userid;
+      localStorage.setItem("userId", userid);
+      navigate(`/dashboard/${userid}`);
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Something went wrong!");
+      }
     }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
-      {/* Use Bootstrap grid classes for responsiveness */}
-      <div className="col-11 col-sm-8 col-md-6 col-lg-4 card shadow p-4">
-        <h3 className="text-center mb-3">Login</h3>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              className="form-control"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-5">
+          <div className="card shadow-lg p-4 rounded-3">
+            <h3 className="text-center mb-4">Login</h3>
+            {message && <div className="alert alert-info">{message}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-success w-100">
+                Login
+              </button>
+            </form>
+            {/* {token && (
+              <div className="alert alert-secondary mt-3">
+                <strong>JWT Token:</strong>
+                <p className="small text-break">{token}</p>
+              </div>
+            )} */}
+            <p className="text-center mt-3">
+              Don’t have an account? <a href="/Signup">SignUp</a>
+            </p>
           </div>
-          <div className="mb-3">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="form-control"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-success w-100">
-            Login
-          </button>
-        </form>
-        <p className="text-center mt-3">
-          Don’t have an account? <Link to="/signup">Signup</Link>
-        </p>
+        </div>
       </div>
     </div>
   );

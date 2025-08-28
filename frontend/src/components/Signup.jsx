@@ -1,61 +1,78 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  });
+
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", formData);
-      alert("Signup successful, please login.");
-      navigate("/");
-    } catch (err) {
-      alert("Signup failed. Try again.");
+      const url = "http://localhost:3000/api/users";
+      const { data } = await axios.post(url, formData);
+      setMessage(data.message);
+      setTimeout(() => navigate("/login"), 500);
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Something went wrong!");
+      }
     }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
-      {/* Use Bootstrap grid classes for responsiveness */}
-      <div className="col-11 col-sm-8 col-md-6 col-lg-4 card shadow p-4">
-        <h3 className="text-center mb-3">Signup</h3>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              className="form-control"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-5">
+          <div className="card shadow-lg p-4 rounded-3">
+            <h3 className="text-center mb-4">Sign Up</h3>
+            {message && <div className="alert alert-info">{message}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-primary w-100">
+                Sign Up
+              </button>
+            </form>
+            <p className="text-center mt-3">
+              Already have an account? <a href="/Login">Login</a>
+            </p>
           </div>
-          <div className="mb-3">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="form-control"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary w-100">
-            Signup
-          </button>
-        </form>
-        <p className="text-center mt-3">
-          Already have an account? <Link to="/">Login</Link>
-        </p>
+        </div>
       </div>
     </div>
   );
