@@ -14,7 +14,8 @@ The standout feature is an **AI-assisted cleanup system powered by heuristics**,
   - Circle detection & smoothing  
   - Rectangle snapping  
   - Arrow recognition  
-- 🔄 Auto-adjust connections when nodes move  
+- 🔄 Auto-adjust connections when nodes move
+- Authentication Feature
 - 🗑️ Diagram saved in Mongodb and also delete functionality  
 - 💾 Export diagrams as PNG  
 
