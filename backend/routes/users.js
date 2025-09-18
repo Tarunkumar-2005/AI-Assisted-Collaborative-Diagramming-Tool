@@ -5,11 +5,12 @@ const bcrypt = require("bcrypt");
 // Register Route
 router.post("/", async (req, res) => {
   try {
+    // Joi validation
     const { error } = validate(req.body);
     if (error)
       return res.status(400).send({ message: error.details[0].message });
 
-    // Check if username already exists
+    // Check if username exists
     const user = await User.findOne({ username: req.body.username });
     if (user)
       return res.status(409).send({ message: "Username already exists!" });
@@ -19,9 +20,14 @@ router.post("/", async (req, res) => {
     const hashPassword = await bcrypt.hash(req.body.password, salt);
 
     // Save new user
-    await new User({ username: req.body.username, password: hashPassword }).save();
+    await new User({
+      username: req.body.username,
+      password: hashPassword,
+    }).save();
+
     res.status(201).send({ message: "User created successfully" });
   } catch (error) {
+    console.error("Signup Error:", error);
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
