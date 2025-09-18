@@ -24,7 +24,11 @@ router.post("/", async (req, res) => {
       { expiresIn: "7d" }
     );
 
+<<<<<<< HEAD
     res.status(200).send({ message: "Login successful", token, userid: user._id });
+=======
+    res.status(200).send({ message: "Login successful", token });
+>>>>>>> 014b171483881f1e0d69889de830edca6ad44673
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).send({ message: "Internal Server Error" });
